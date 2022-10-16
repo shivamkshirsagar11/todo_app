@@ -212,6 +212,7 @@ class _HomeState extends State<Home> {
         ),
         IconButton(onPressed: ()async {
           await SessionManager().set("isLoggedIn", false);
+          AuthServices().SignOut();
           Navigator.push(
               context,
               MaterialPageRoute(

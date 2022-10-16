@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_todo_app/screens/DatabaseService.dart';
 import 'package:flutter_todo_app/screens/home.dart';
 import 'login.dart';
 
@@ -10,6 +11,15 @@ class MyRegister extends StatefulWidget {
 }
 
 class _MyRegisterState extends State<MyRegister> {
+  final name = TextEditingController();
+  final email = TextEditingController();
+  final password = TextEditingController();
+  var error = "";
+  setError(){
+    setState(() {
+      error = "User not verified try changing email or register again!";
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -44,6 +54,7 @@ class _MyRegisterState extends State<MyRegister> {
                       child: Column(
                         children: [
                           TextField(
+                            controller:name,
                             style: TextStyle(color: Colors.white),
                             decoration: InputDecoration(
                                 enabledBorder: OutlineInputBorder(
@@ -63,14 +74,15 @@ class _MyRegisterState extends State<MyRegister> {
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 )),
-                          ),
-                          SizedBox(
-                            height: 30,
-                          ),
-                          TextField(
-                            style: TextStyle(color: Colors.white),
-                            decoration: InputDecoration(
-                                enabledBorder: OutlineInputBorder(
+                     ),
+                     SizedBox(
+                       height: 30,
+                     ),
+                     TextField(
+                       controller:email,
+                       style: TextStyle(color: Colors.white),
+                       decoration: InputDecoration(
+                           enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
                                   borderSide: BorderSide(
                                     color: Colors.white,
@@ -92,6 +104,7 @@ class _MyRegisterState extends State<MyRegister> {
                             height: 30,
                           ),
                           TextField(
+                            controller:password,
                             style: TextStyle(color: Colors.white),
                             obscureText: true,
                             decoration: InputDecoration(
@@ -116,6 +129,7 @@ class _MyRegisterState extends State<MyRegister> {
                           SizedBox(
                             height: 40,
                           ),
+                          Text("$error",style: TextStyle(fontSize: 20,color: Colors.red,fontWeight: FontWeight.bold),),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -131,11 +145,23 @@ class _MyRegisterState extends State<MyRegister> {
                                 backgroundColor: Color(0xff4c505b),
                                 child: IconButton(
                                     color: Colors.white,
-                                    onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => Home()));
+                                    onPressed: () async {
+                                      dynamic result = await AuthServices().saveUser(email.text, password.text);
+                                      print(result);
+                                      if(result != null) {
+                                        print(result);
+                                        name.text = "";
+                                        email.text = "";
+                                        password.text="";
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => MyLogin()));
+                                      }
+                                      else{
+                                        email.text = "";
+                                            setError();
+                                      }
                                     },
                                     icon: Icon(
                                       Icons.arrow_forward,

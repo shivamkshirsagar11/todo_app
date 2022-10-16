@@ -19,7 +19,8 @@ class _MyLoginState extends State<MyLogin> {
     await SessionManager().set("isLoggedIn", value);
   }
   authLogin() async {
-    bool check = await SessionManager().get("isLoggedIn");
+    bool check = false;
+    check = await SessionManager().get("isLoggedIn");
     if(check){
       Navigator.push(
           context,
@@ -30,6 +31,7 @@ class _MyLoginState extends State<MyLogin> {
   @override
   void initState(){
   authLogin();
+  print("Current User UID"+" "+AuthServices().CurrUser().toString());
     super.initState();
   }
   String  error_login = " ";
@@ -111,28 +113,22 @@ class _MyLoginState extends State<MyLogin> {
                                 backgroundColor: Color(0xff4c505b),
                                 child: IconButton(
                                     color: Colors.white,
-                                    onPressed: () {
-                                      var user;
-                                      // print(email.text+" "+password.text);
-                                      Login().AuthUser(email.text,password.text).then((QuerySnapshot qs){
-                                        if(qs.size > 0){
-                                          email.text = "";
-                                          password.text = "";
-                                          setLogin(true);
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) => Home()));
-                                        }
-                                        else{
-                                          setError();
-                                          setLogin(false);
-                                          email.text = "";
-                                          password.text = "";
-                                        }
-
-                                      });
-
+                                    onPressed: () async {
+                                      var user = await AuthServices().AuthUser(email.text, password.text);
+                                      if(user != null){
+                                        email.text = "";
+                                        password.text = "";
+                                        setLogin(true);
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => Home()));
+                                      }
+                                      else{
+                                        email.text = "";
+                                        password.text = "";
+                                        setError();
+                                      }
                                     },
                                     icon: Icon(
                                       Icons.arrow_forward,
