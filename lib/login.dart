@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'reg.dart';
 import './screens/home.dart';
+import '../screens/DatabaseService.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_session_manager/flutter_session_manager.dart';
 class MyLogin extends StatefulWidget {
   const MyLogin({Key? key}) : super(key: key);
 
@@ -9,6 +13,31 @@ class MyLogin extends StatefulWidget {
 }
 
 class _MyLoginState extends State<MyLogin> {
+  final email = TextEditingController();
+  final password = TextEditingController();
+  setLogin(value) async {
+    await SessionManager().set("isLoggedIn", value);
+  }
+  authLogin() async {
+    bool check = await SessionManager().get("isLoggedIn");
+    if(check){
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => Home()));
+    }
+  }
+  @override
+  void initState(){
+  authLogin();
+    super.initState();
+  }
+  String  error_login = " ";
+  setError(){
+    setState(() {
+      error_login = "No user Found!";
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -40,6 +69,7 @@ class _MyLoginState extends State<MyLogin> {
                       child: Column(
                         children: [
                           TextField(
+                            controller:email,
                             style: TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                                 fillColor: Colors.grey.shade100,
@@ -53,6 +83,7 @@ class _MyLoginState extends State<MyLogin> {
                             height: 30,
                           ),
                           TextField(
+                            controller:password,
                             style: TextStyle(),
                             obscureText: true,
                             decoration: InputDecoration(
@@ -66,6 +97,7 @@ class _MyLoginState extends State<MyLogin> {
                           SizedBox(
                             height: 40,
                           ),
+                          Text("$error_login",style: TextStyle(fontSize: 20,color: Colors.red,fontWeight: FontWeight.bold),),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -80,10 +112,27 @@ class _MyLoginState extends State<MyLogin> {
                                 child: IconButton(
                                     color: Colors.white,
                                     onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => Home()));
+                                      var user;
+                                      // print(email.text+" "+password.text);
+                                      Login().AuthUser(email.text,password.text).then((QuerySnapshot qs){
+                                        if(qs.size > 0){
+                                          email.text = "";
+                                          password.text = "";
+                                          setLogin(true);
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) => Home()));
+                                        }
+                                        else{
+                                          setError();
+                                          setLogin(false);
+                                          email.text = "";
+                                          password.text = "";
+                                        }
+
+                                      });
+
                                     },
                                     icon: Icon(
                                       Icons.arrow_forward,

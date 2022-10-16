@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_session_manager/flutter_session_manager.dart';
 import 'DatabaseService.dart';
 import '../model/todo.dart';
+import '../login.dart';
 import '../constants/colors.dart';
 import '../widgets/todo_item.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -15,7 +17,6 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final todosList = ToDo.todoList();
-  var user;
   List<ToDo> _foundToDo = [];
   final _todoController = TextEditingController();
 
@@ -23,10 +24,7 @@ class _HomeState extends State<Home> {
   void initState() {
     _foundToDo = todosList;
     super.initState();
-  Login().AuthUser().then((QuerySnapshot qs){
-    user = qs.docs[0].data();
-    print(user);
-  });
+
   }
 
   @override
@@ -212,6 +210,13 @@ class _HomeState extends State<Home> {
           color: tdBlack,
           size: 30,
         ),
+        IconButton(onPressed: ()async {
+          await SessionManager().set("isLoggedIn", false);
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => MyLogin()));
+        }, icon: new Icon(Icons.logout_sharp,color: Colors.redAccent,)),
         Container(
           height: 40,
           width: 40,
