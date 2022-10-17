@@ -19,7 +19,7 @@ class _HomeState extends State<Home> {
   final todosList = ToDo.todoList();
   List<ToDo> _foundToDo = [];
   final _todoController = TextEditingController();
-
+  final name = AuthServices.NAME;
   @override
   void initState() {
     _foundToDo = todosList;
@@ -51,7 +51,7 @@ class _HomeState extends State<Home> {
                           bottom: 20,
                         ),
                         child: Text(
-                          'All ToDos',
+                          '$name\'s ToDos',
                           style: TextStyle(
                             fontSize: 30,
                             fontWeight: FontWeight.w500,

@@ -17,7 +17,7 @@ class _MyRegisterState extends State<MyRegister> {
   var error = "";
   setError(){
     setState(() {
-      error = "User not verified try changing email or register again!";
+      error = "Change email or weak password!";
     });
   }
   @override
@@ -146,7 +146,7 @@ class _MyRegisterState extends State<MyRegister> {
                                 child: IconButton(
                                     color: Colors.white,
                                     onPressed: () async {
-                                      dynamic result = await AuthServices().saveUser(email.text, password.text);
+                                      dynamic result = await AuthServices().saveUser(email.text, password.text,name.text);
                                       print(result);
                                       if(result != null) {
                                         print(result);

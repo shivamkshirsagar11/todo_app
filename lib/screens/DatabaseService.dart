@@ -4,6 +4,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../firebase_options.dart';
 class AuthServices{
   FirebaseAuth auth = FirebaseAuth.instance;
+  static final CollectionReference user = FirebaseFirestore.instance.collection("users");
+  static final CollectionReference todos = FirebaseFirestore.instance.collection("todos");
+  static late final UID;
+  static var NAME ="";
+  static bool error = false;
   Future CurrUser()async {
     return await auth.currentUser?.uid;
   }
@@ -16,6 +21,12 @@ class AuthServices{
           email: email,
           password: password
       );
+      final user = userCredential.user;
+      if (user != null){
+        UID = user.uid;
+        error = true;
+        await getUsernameFromUID();
+      }
       return userCredential.user;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
@@ -25,12 +36,19 @@ class AuthServices{
       }
     }
   }
-  Future saveUser(email,password)async {
+  Future saveUser(email,password,name)async {
   try{
       UserCredential userCredential = await auth.createUserWithEmailAndPassword(
           email: email,
           password: password,
       );
+      final user = userCredential.user;
+      if (user != null){
+        UID = user.uid;
+        error = true;
+        await SaveName(name, UID);
+        NAME = name;
+      }
       return userCredential.user;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
@@ -41,5 +59,17 @@ class AuthServices{
   }catch(e){
     print(e.toString());
   }
+  }
+
+  static Future SaveName(name,uid) async {
+  return await user.doc(uid).set({
+    "userName": name,
+  });
+  }
+
+  static Future getUsernameFromUID() async{
+    var x = await user.doc(UID).get();
+    NAME = "shivam";
+    print(x);
   }
 }
