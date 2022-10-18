@@ -16,6 +16,9 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  var _reference = FirebaseFirestore.instance.collection('todos');
+  String UID = AuthServices.UID;
+  late Stream<QuerySnapshot> stream =_reference.where("userID", isEqualTo: UID).snapshots();
   final todosList = ToDo.todoList();
   List<ToDo> _foundToDo = [];
   final _todoController = TextEditingController();
@@ -58,12 +61,37 @@ class _HomeState extends State<Home> {
                           ),
                         ),
                       ),
-                      for (ToDo todoo in _foundToDo.reversed)
-                        ToDoItem(
-                          todo: todoo,
-                          onToDoChanged: _handleToDoChange,
-                          onDeleteItem: _deleteToDoItem,
-                        ),
+                      // for (ToDo todoo in _foundToDo.reversed)
+                      //   ToDoItem(
+                      //     todo: todoo,
+                      //     onToDoChanged: _handleToDoChange,
+                      //     onDeleteItem: _deleteToDoItem,
+                      //   ),
+                      StreamBuilder<QuerySnapshot>(
+                        stream: stream,
+                        builder: (BuildContext contex, AsyncSnapshot snapshot){
+                          if (snapshot.hasError) {
+                            return Center(child: Text('Some error occurred ${snapshot.error}'));
+                          }
+                          if(snapshot.hasData){
+                            QuerySnapshot querySnapshot = snapshot.data;
+                            List<QueryDocumentSnapshot> documents = querySnapshot.docs;
+                            List<Map> items = documents.map((e) => e.data() as Map).toList();
+                            return ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: items.length,
+                              itemBuilder: (BuildContext context, int index) {
+
+
+                                return ToDoItem(todo: ToDo.mapping(items[index] as Map<String,dynamic>), onToDoChanged: _handleToDoChange, onDeleteItem: _deleteToDoItem);
+                              },
+                            );
+                          }
+
+                          return Center(child: CircularProgressIndicator());
+                        },
+                      )
                     ],
                   ),
                 )
@@ -137,12 +165,14 @@ class _HomeState extends State<Home> {
     setState(() {
       todo.isDone = !todo.isDone;
     });
+    updateToDo(todo.id);
   }
 
   void _deleteToDoItem(String id) {
     setState(() {
       todosList.removeWhere((item) => item.id == id);
     });
+    deleteToDo(id);
   }
 
   void _addToDoItem(String toDo) {
@@ -153,6 +183,7 @@ class _HomeState extends State<Home> {
       ));
     });
     _todoController.clear();
+    createToDo(toDo, UID);
   }
 
   void _runFilter(String enteredKeyword) {
@@ -229,4 +260,25 @@ class _HomeState extends State<Home> {
       ]),
     );
   }
+}
+
+Future createToDo(text,uid) async {
+  final todo = FirebaseFirestore.instance.collection("todos").doc();
+  final obj = {
+    "id":todo.id,
+    "todoText":text,
+    "isDone":false,
+    "userID":uid
+  };
+  await todo.set(obj);
+}
+Future deleteToDo(id) async {
+  final todo = FirebaseFirestore.instance.collection("todos").doc(id);
+  await todo.delete();
+}
+Future updateToDo(id) async {
+  final todo = FirebaseFirestore.instance.collection("todos").doc(id);
+  await todo.update({
+    "isDone":true
+  });
 }

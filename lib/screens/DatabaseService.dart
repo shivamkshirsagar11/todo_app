@@ -1,19 +1,22 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_todo_app/model/todo.dart';
 import '../firebase_options.dart';
 class AuthServices{
   FirebaseAuth auth = FirebaseAuth.instance;
   static final CollectionReference user = FirebaseFirestore.instance.collection("users");
   static final CollectionReference todos = FirebaseFirestore.instance.collection("todos");
-  static late final UID;
+  static var UID;
   static var NAME ="";
   static bool error = false;
+  static List<ToDo>list_todos = [];
   Future CurrUser()async {
     return await auth.currentUser?.uid;
   }
   Future SignOut()async {
     await auth.signOut();
+    UID = null;
   }
   Future AuthUser(email,password)async {
     try {
@@ -25,7 +28,8 @@ class AuthServices{
       if (user != null){
         UID = user.uid;
         error = true;
-        await getUsernameFromUID();
+        // await getUsernameFromUID();
+        // await getTodos().then((value) => print(list_todos));
       }
       return userCredential.user;
     } on FirebaseAuthException catch (e) {
