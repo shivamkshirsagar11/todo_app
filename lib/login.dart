@@ -15,8 +15,9 @@ class MyLogin extends StatefulWidget {
 class _MyLoginState extends State<MyLogin> {
   final email = TextEditingController();
   final password = TextEditingController();
-  setLogin(value) async {
+  setLogin(value,em) async {
     await SessionManager().set("isLoggedIn", value);
+    await SessionManager().set("email", em);
   }
   authLogin() async {
     bool check = false;
@@ -118,7 +119,7 @@ class _MyLoginState extends State<MyLogin> {
                                       if(user != null){
                                         email.text = "";
                                         password.text = "";
-                                        setLogin(true);
+                                        setLogin(true,email.text);
                                         Navigator.push(
                                             context,
                                             MaterialPageRoute(

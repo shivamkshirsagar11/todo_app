@@ -17,7 +17,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   var _reference = FirebaseFirestore.instance.collection('todos');
-  String UID = AuthServices.UID;
+  var UID = AuthServices.UID;
   late Stream<QuerySnapshot> stream =_reference.where("userID", isEqualTo: UID).snapshots();
   final todosList = ToDo.todoList();
   List<ToDo> _foundToDo = [];
@@ -165,7 +165,7 @@ class _HomeState extends State<Home> {
     setState(() {
       todo.isDone = !todo.isDone;
     });
-    updateToDo(todo.id);
+    updateToDo(todo.id,todo.isDone);
   }
 
   void _deleteToDoItem(String id) {
@@ -276,9 +276,9 @@ Future deleteToDo(id) async {
   final todo = FirebaseFirestore.instance.collection("todos").doc(id);
   await todo.delete();
 }
-Future updateToDo(id) async {
+Future updateToDo(id,updatedWorkDone) async {
   final todo = FirebaseFirestore.instance.collection("todos").doc(id);
   await todo.update({
-    "isDone":true
+    "isDone":updatedWorkDone
   });
 }

@@ -9,6 +9,7 @@ class AuthServices{
   static final CollectionReference todos = FirebaseFirestore.instance.collection("todos");
   static var UID;
   static var NAME ="";
+  static var Email = "";
   static bool error = false;
   static List<ToDo>list_todos = [];
   Future CurrUser()async {
@@ -16,9 +17,9 @@ class AuthServices{
   }
   Future SignOut()async {
     await auth.signOut();
-    UID = null;
   }
   Future AuthUser(email,password)async {
+    Email = email;
     try {
       UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: email,
