@@ -18,6 +18,7 @@
 - [About](#about)
 - [Prerequisites](#prerequisites)
 - [Setup](#setup)
+- [Install Apk](#installApk)
 - [Usage](#usage)
 - [Built Using](#built_using)
 - [Authors](#authors)
@@ -36,6 +37,11 @@ We have made our project using :
 3. Kotlin.
 4. Firebase.
 5. Andriod Studio.
+
+###  Install Apk <a name = "installApk"></a>
+```sh
+Go to folder InstallApk and select the ToodleDo.apk file and install it on your device</br>After that simply use our APK 😊
+```
 
 ### 🔧 Setup <a name = "setup"></a>
 
