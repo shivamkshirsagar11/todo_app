@@ -54,7 +54,7 @@ class _HomeState extends State<Home> {
                           bottom: 20,
                         ),
                         child: Text(
-                          '$name\'s ToDos',
+                          'All ToDos',
                           style: TextStyle(
                             fontSize: 30,
                             fontWeight: FontWeight.w500,
