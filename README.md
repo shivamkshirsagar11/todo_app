@@ -3,7 +3,7 @@
  <img width=200px height=200px src="./assets/icon/icon.png" alt="Project logo"></a>
 </p>
 
-<h3 align="center">To-Do App</h3>
+<h3 align="center">ToodleDo</h3>
 
 <div align="center">
 
