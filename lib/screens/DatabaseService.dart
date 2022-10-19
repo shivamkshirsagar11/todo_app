@@ -17,6 +17,7 @@ class AuthServices{
   }
   Future SignOut()async {
     await auth.signOut();
+    UID = null;
   }
   Future AuthUser(email,password)async {
     Email = email;
